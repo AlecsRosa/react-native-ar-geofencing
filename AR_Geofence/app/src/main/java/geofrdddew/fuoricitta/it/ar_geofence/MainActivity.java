@@ -4,28 +4,18 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -52,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addGeofences();
-                startLocationUpdates();
+//                startLocationUpdates();
             }
         });
 
@@ -61,56 +51,56 @@ public class MainActivity extends AppCompatActivity {
         popupateList();
 
 
-        getLocation();
+//        getLocation();
 
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) return;
-
-                for (Location location : locationResult.getLocations()) {
-                    Log.e("LOC", location.getLatitude() + " - " + location.getLongitude());
-                }
-            }
-        };
-
-    }
-
-
-
-    private void startLocationUpdates() {
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        fusedLocationClient.requestLocationUpdates(createLocationRequest(), locationCallback, Looper.getMainLooper());
-    }
-
-
-    protected LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        return locationRequest;
-    }
-
-
-    void getLocation() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(createLocationRequest());
-
-        SettingsClient client = LocationServices.getSettingsClient(this);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-
-        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                Log.e("LOCATION", String.valueOf(locationSettingsResponse));
-                // All location settings are satisfied. The client can initialize
-                // location requests here.
-                // ...
-            }
-        });
+//        locationCallback = new LocationCallback() {
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//                if (locationResult == null) return;
+//
+//                for (Location location : locationResult.getLocations()) {
+//                    Log.e("LOC", location.getLatitude() + " - " + location.getLongitude());
+//                }
+//            }
+//        };
 
     }
+
+
+
+//    private void startLocationUpdates() {
+//        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//        fusedLocationClient.requestLocationUpdates(createLocationRequest(), locationCallback, Looper.getMainLooper());
+//    }
+//
+//
+//    protected LocationRequest createLocationRequest() {
+//        LocationRequest locationRequest = LocationRequest.create();
+//        locationRequest.setInterval(10000);
+//        locationRequest.setFastestInterval(5000);
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//
+//        return locationRequest;
+//    }
+//
+//
+//    void getLocation() {
+//        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(createLocationRequest());
+//
+//        SettingsClient client = LocationServices.getSettingsClient(this);
+//        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+//
+//        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+//            @Override
+//            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+//                Log.e("LOCATION", String.valueOf(locationSettingsResponse));
+//                // All location settings are satisfied. The client can initialize
+//                // location requests here.
+//                // ...
+//            }
+//        });
+//
+//    }
 
 
     private boolean checkPermissions() {
@@ -173,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void removeGeofence() {
-        geofencingClient.removeGeofences(getGeofencePendingIntent());
-    }
+//    private void removeGeofence() {
+//        geofencingClient.removeGeofences(getGeofencePendingIntent());
+//    }
 
     void showSnackbar(final String text) {
         View container = findViewById(android.R.id.content);
