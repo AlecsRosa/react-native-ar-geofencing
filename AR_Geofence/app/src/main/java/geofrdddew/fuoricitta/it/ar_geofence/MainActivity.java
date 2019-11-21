@@ -4,32 +4,18 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -48,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
@@ -60,68 +44,64 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addGeofences();
-                startLocationUpdates();
+                //startLocationUpdates();
             }
         });
 
-        popupateList();
         geofencingClient = LocationServices.getGeofencingClient(this);
 
+        popupateList();
 
-        getLocation();
 
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) return;
-
-                for (Location location : locationResult.getLocations()) {
-                    Log.e("LOC", String.valueOf(location));
-                    // Update UI with location data
-                    // ...
-                }
-            }
-
-            ;
-        };
+        //getLocation();
+//
+//        locationCallback = new LocationCallback() {
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//                if (locationResult == null) return;
+//
+//                for (Location location : locationResult.getLocations()) {
+//                    Log.e("LOC", location.getLatitude() + " - " + location.getLongitude());
+//                }
+//            }
+//        };
 
     }
 
 
-    private void startLocationUpdates() {
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        fusedLocationClient.requestLocationUpdates(createLocationRequest(), locationCallback, Looper.getMainLooper());
-    }
+//    private void startLocationUpdates() {
+//        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//        fusedLocationClient.requestLocationUpdates(createLocationRequest(), locationCallback, Looper.getMainLooper());
+//    }
 
 
-    protected LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//    protected LocationRequest createLocationRequest() {
+//        LocationRequest locationRequest = LocationRequest.create();
+//        locationRequest.setInterval(10000);
+//        locationRequest.setFastestInterval(5000);
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//
+//        return locationRequest;
+//    }
 
-        return locationRequest;
-    }
 
-
-    void getLocation() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(createLocationRequest());
-
-        SettingsClient client = LocationServices.getSettingsClient(this);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-
-        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                Log.e("LOCATION", String.valueOf(locationSettingsResponse));
-                // All location settings are satisfied. The client can initialize
-                // location requests here.
-                // ...
-            }
-        });
-
-    }
+//    void getLocation() {
+//        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(createLocationRequest());
+//
+//        SettingsClient client = LocationServices.getSettingsClient(this);
+//        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+//
+//        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+//            @Override
+//            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+//                Log.e("LOCATION", String.valueOf(locationSettingsResponse));
+//                // All location settings are satisfied. The client can initialize
+//                // location requests here.
+//                // ...
+//            }
+//        });
+//
+//    }
 
 
     private boolean checkPermissions() {
@@ -136,12 +116,10 @@ public class MainActivity extends AppCompatActivity {
 
         geofenceList.add(new Geofence.Builder()
                 .setRequestId("FRCT")
-                .setCircularRegion(41.6644089, 13.3968187, 300.0f)
+                .setCircularRegion(41.576729, 13.319066, 300.0f)
                 .setExpirationDuration(1000 * 60 * 60 * 24)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build());
-
-        Log.e("LIST", String.valueOf(geofenceList));
     }
 
 
@@ -162,13 +140,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private PendingIntent getGeofencePendingIntent() {
-        // Reuse the PendingIntent if we already have it.
         if (geofencePendingIntent != null) {
             return geofencePendingIntent;
         }
         Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
-        // calling addGeofences() and removeGeofences().
         geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return geofencePendingIntent;
     }
@@ -184,6 +159,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void removeGeofence() {
+        geofencingClient.removeGeofences(getGeofencePendingIntent());
+    }
+
     void showSnackbar(final String text) {
         View container = findViewById(android.R.id.content);
         if (container != null) {
@@ -192,25 +171,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

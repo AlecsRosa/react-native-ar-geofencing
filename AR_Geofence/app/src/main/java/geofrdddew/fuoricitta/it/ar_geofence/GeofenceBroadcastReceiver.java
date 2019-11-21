@@ -24,8 +24,6 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
     // ...
     public void onReceive(Context context, Intent intent) {
-        Log.e(TAG, String.valueOf(intent));
-
         this.context = context;
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
@@ -45,12 +43,14 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             // Get the geofences that were triggered. A single event can trigger
             // multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            Log.e(TAG, "" + triggeringGeofences);
+            Log.e(TAG, String.valueOf(geofenceTransition));
 
-            // Get the transition details as a String.
+            switch (geofenceTransition) {
+                case Geofence.GEOFENCE_TRANSITION_ENTER: sendNotification("Sei entrato"); break;
+                case Geofence.GEOFENCE_TRANSITION_EXIT: sendNotification("Sei uscito"); break;
+            }
 
-            //Send notification and log the transition details.
-            sendNotification("NOTIFICA");
+
         } else {
             // Log the error.
             Log.e(TAG, "Errore");
@@ -67,8 +67,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "APP NAME";
             // Create the channel for the notification
-            NotificationChannel mChannel =
-                    new NotificationChannel("CHANNEL ID", name, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel mChannel =  new NotificationChannel("CHANNEL ID", name, NotificationManager.IMPORTANCE_DEFAULT);
 
             // Set the Notification Channel for the Notification Manager.
             mNotificationManager.createNotificationChannel(mChannel);
