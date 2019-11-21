@@ -16,8 +16,6 @@ import androidx.core.app.NotificationCompat;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
-import java.util.List;
-
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "Ciao";
     Context context;
@@ -27,35 +25,20 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         this.context = context;
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+
         if (geofencingEvent.hasError()) {
-            //String errorMessage = GeofenceErrorMessages.getErrorString(this,geofencingEvent.getErrorCode());
-            Log.e(TAG, "ERRORE 1");
+            Log.e(TAG, String.valueOf(geofencingEvent.getErrorCode()));
             return;
         }
 
         // Get the transition type.
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
+        String id = geofencingEvent.getTriggeringGeofences().get(0).getRequestId();
 
-        // Test that the reported transition was of interest.
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER || geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-
-
-            // Get the geofences that were triggered. A single event can trigger
-            // multiple geofences.
-            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-            Log.e(TAG, String.valueOf(geofenceTransition));
-
-            switch (geofenceTransition) {
-                case Geofence.GEOFENCE_TRANSITION_ENTER: sendNotification("Sei entrato"); break;
-                case Geofence.GEOFENCE_TRANSITION_EXIT: sendNotification("Sei uscito"); break;
-            }
-
-
-        } else {
-            // Log the error.
-            Log.e(TAG, "Errore");
+        switch (geofenceTransition) {
+            case Geofence.GEOFENCE_TRANSITION_ENTER: sendNotification("Sei nei pressi di " + id); break;
+            case Geofence.GEOFENCE_TRANSITION_EXIT: sendNotification("Sei uscito da " + id); break;
         }
-
     }
 
 
@@ -67,7 +50,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "APP NAME";
             // Create the channel for the notification
-            NotificationChannel mChannel =  new NotificationChannel("CHANNEL ID", name, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel mChannel =  new NotificationChannel("CHANNEL ID", name, NotificationManager.IMPORTANCE_HIGH);
 
             // Set the Notification Channel for the Notification Manager.
             mNotificationManager.createNotificationChannel(mChannel);
@@ -98,7 +81,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
                 // to decode the Bitmap.
                 .setColor(Color.RED)
                 .setContentTitle(notificationDetails)
-                .setContentText("Content")
+                .setContentText("Contenuto della notifica")
                 .setContentIntent(notificationPendingIntent);
 
         // Set the Channel ID for Android O.
